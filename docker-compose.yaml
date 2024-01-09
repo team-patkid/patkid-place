@@ -5,8 +5,9 @@ services:
     build: ./
     container_name: place_api
     expose:
-      - "3000"
+      - '3000'
 
 networks:
-  nestjs_network:
-    driver: bridge
+  default:
+    external:
+      name: patkid-bridge
