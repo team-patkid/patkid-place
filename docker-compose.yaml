@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
       args:
         - NODE_ENV=${NODE_ENV}
-    container_name: maestro_api
+    container_name: place_api
     expose:
       - '3001'
     networks:
@@ -15,7 +15,7 @@ services:
     logging:
       driver: awslogs
       options:
-        awslogs-group: '${NODE_ENV}-maestro-backend'
+        awslogs-group: '${NODE_ENV}-place-backend'
         awslogs-region: 'ap-northeast-2'
         awslogs-stream: 'backend'
 networks:

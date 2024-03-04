@@ -12,7 +12,7 @@ node {
         sshagent (credentials: ['79ac0389-d078-4099-81e5-96bff12a2672']) {
           sh """
             ssh -o StrictHostKeyChecking=no ${env.TARGET_HOST} '
-            cd projectP/maestro-pitch
+            cd projectP/patkid-place
             git fetch
             git pull origin main
           '
@@ -23,7 +23,7 @@ node {
         sshagent (credentials: ['79ac0389-d078-4099-81e5-96bff12a2672']) {
           sh """
             ssh -o StrictHostKeyChecking=no ${env.TARGET_HOST} '
-            cd projectP/maestro-pitch
+            cd projectP/patkid-place
             sudo docker compose --env-file ./src/config/docker/.env.${env.BRANCH_NAME} build
           '
           """
@@ -33,7 +33,7 @@ node {
         sshagent (credentials: ['79ac0389-d078-4099-81e5-96bff12a2672']) {
           sh """
             ssh -o StrictHostKeyChecking=no ${env.TARGET_HOST} '
-            cd projectP/maestro-pitch
+            cd projectP/patkid-place
             sudo docker compose -f docker-compose-test.yaml --env-file ./src/config/docker/.env.test run backend npm run test
           '
           """
@@ -43,7 +43,7 @@ node {
         sshagent (credentials: ['79ac0389-d078-4099-81e5-96bff12a2672']) {
           sh """
             ssh -o StrictHostKeyChecking=no ${env.TARGET_HOST} '
-            cd projectP/maestro-pitch
+            cd projectP/patkid-place
             sudo docker compose --env-file ./src/config/docker/.env.${env.BRANCH_NAME} up -d
           '
           """
