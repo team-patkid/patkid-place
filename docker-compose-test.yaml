@@ -12,12 +12,6 @@ services:
       - '3001'
     networks:
       - patkid-bridge
-    logging:
-      driver: awslogs
-      options:
-        awslogs-group: '${NODE_ENV}-maestro-backend'
-        awslogs-region: 'ap-northeast-2'
-        awslogs-stream: 'backend'
 networks:
   patkid-bridge:
     external: true
