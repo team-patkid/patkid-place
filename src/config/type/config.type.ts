@@ -12,21 +12,4 @@ export interface Configuration {
     user: string;
     password: string;
   };
-
-  // 소셜 로그인
-  readonly SNS: {
-    KAKAO: {
-      API: string;
-      AUTH_HOST: string;
-      API_HOST: string;
-      SECRET: string;
-      RESPONSE_TYPE: string;
-      GRANT_TYPE: string;
-    };
-  };
-
-  readonly JWT: {
-    SECRET: string;
-    LOGIN_EXPIRE_IN: string;
-  };
 }
