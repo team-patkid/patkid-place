@@ -8,13 +8,13 @@ node {
           sh "ssh -o StrictHostKeyChecking=no ${env.TARGET_HOST} 'uptime'"
         }
       }
-      stage('git pull origin main') {
+      stage('git pull origin dev') {
         sshagent (credentials: ['79ac0389-d078-4099-81e5-96bff12a2672']) {
           sh """
             ssh -o StrictHostKeyChecking=no ${env.TARGET_HOST} '
             cd projectP/patkid-place
             git fetch
-            git pull origin main
+            git pull origin ${env.BRANCH_NAME}
           '
           """
         }
