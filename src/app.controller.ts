@@ -7,6 +7,6 @@ export class AppController {
   @Get()
   @HttpCode(HttpStatus.OK)
   getHello(): string {
-    return 'OK~~!';
+    return 'Hello patkid world!';
   }
 }
