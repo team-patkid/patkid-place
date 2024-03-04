@@ -13,7 +13,9 @@ node {
           sh """
             ssh -o StrictHostKeyChecking=no ${env.TARGET_HOST} '
             cd projectP/patkid-place
-            git fetch
+            git fetch origin
+            git checkout -b ${env.BRANCH_NAME} origin/${env.BRANCH_NAME}
+            git checkout ${env.BRANCH_NAME}
             git pull origin ${env.BRANCH_NAME}
           '
           """
