@@ -5,7 +5,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { TypeTagStatus, TypeTagType } from '../enum/type.enum';
@@ -13,11 +13,8 @@ import { PlaceEntity } from './place.entity';
 
 @Entity('tag')
 export class TagEntity extends BaseEntity {
-  @PrimaryColumn({
-    name: 'tag_id',
-    generated: 'increment',
-  })
-  tagId: number;
+  @PrimaryGeneratedColumn('increment')
+  id: number;
 
   @Column('int', { name: 'place_id' })
   placeId: number;
@@ -44,7 +41,11 @@ export class TagEntity extends BaseEntity {
   @UpdateDateColumn({ type: 'timestamp with time zone' })
   dateUpdate: Date;
 
-  @ManyToOne(() => PlaceEntity, (placeEntity: PlaceEntity) => placeEntity.tag)
+  @ManyToOne(() => PlaceEntity, (placeEntity: PlaceEntity) => placeEntity.tag, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    createForeignKeyConstraints: process.env.NODE_ENV !== 'test',
+  })
   @JoinColumn({ name: 'place_id' })
   place: PlaceEntity[];
 }

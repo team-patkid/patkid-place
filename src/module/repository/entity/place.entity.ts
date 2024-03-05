@@ -19,7 +19,7 @@ export class PlaceEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column('varchar', { length: 10 })
+  @Column('int')
   mbtiId: string;
 
   @Column('varchar', { length: 100, nullable: false })
