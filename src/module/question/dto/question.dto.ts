@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { TypeQuestiontype } from 'src/module/repository/enum/question.enum';
 import { TypeQuestionSubType } from 'src/module/repository/enum/question.sub.enum';
 
 export class GetQeustionServiceDto {
   id: number;
   content: string;
   sort: number;
+  type: TypeQuestiontype;
   questionSub: {
     id: number;
     questionId: number;
@@ -17,6 +19,7 @@ export class GetQeustionServiceDto {
     dto.id = entity.id;
     dto.content = entity.content;
     dto.sort = entity.sort;
+    dto.type = entity.type;
     dto.questionSub = entity.questionSub.map((sub) => ({
       id: sub.id,
       questionId: sub.questionId,
@@ -60,6 +63,12 @@ export class GetQeustionDto {
     example: '이벤트에 당첨돼서 전시회 티켓 한 장이 생긴 나는',
   })
   content: string;
+  @ApiProperty({
+    type: String,
+    description: '질문 타입',
+    example: 'EI',
+  })
+  type: TypeQuestiontype;
   @ApiProperty({ type: Number, description: '질문 순서', example: 1 })
   sort: number;
   @ApiProperty({ type: [GetQuestionSubDto] })
@@ -70,6 +79,7 @@ export class GetQeustionDto {
     dto.id = entity.id;
     dto.content = entity.content;
     dto.sort = entity.sort;
+    dto.type = entity.type;
     dto.questionSub = entity.questionSub.map((sub) =>
       GetQuestionSubDto.from(sub),
     );

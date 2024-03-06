@@ -1,7 +1,10 @@
 import sinon, { SinonStubbedInstance } from 'sinon';
 import { QuestionEntity } from '../repository/entity/question.entity';
 import { QuestionSubEntity } from '../repository/entity/question.sub.entity';
-import { TypeQuestionStatus } from '../repository/enum/question.enum';
+import {
+  TypeQuestionStatus,
+  TypeQuestiontype,
+} from '../repository/enum/question.enum';
 import {
   TypeQuestionSubStatus,
   TypeQuestionSubType,
@@ -22,6 +25,7 @@ describe('QuestionService', () => {
     id?: number;
     content?: string;
     sort?: number;
+    type?: TypeQuestiontype;
     status?: TypeQuestionStatus;
     dateCreate?: Date;
     dateUpdate?: Date;
@@ -31,6 +35,7 @@ describe('QuestionService', () => {
     question.id = ctx.id || 1;
     question.content = ctx.content || 'content';
     question.sort = ctx.sort || 1;
+    question.type = ctx.type || TypeQuestiontype.EI;
     question.status = ctx.status || TypeQuestionStatus.NORMAL;
     question.dateCreate = ctx.dateCreate || new Date();
     question.dateUpdate = ctx.dateUpdate || new Date();
@@ -87,6 +92,7 @@ describe('QuestionService', () => {
       id: question.id,
       content: question.content,
       sort: question.sort,
+      type: question.type,
       questionSub: question.questionSub.map((sub) => ({
         id: sub.id,
         questionId: sub.questionId,

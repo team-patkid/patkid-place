@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { TypeQuestionStatus } from '../enum/question.enum';
+import { TypeQuestionStatus, TypeQuestiontype } from '../enum/question.enum';
 import { QuestionSubEntity } from './question.sub.entity';
 
 @Entity('question')
@@ -20,6 +20,9 @@ export class QuestionEntity extends BaseEntity {
 
   @Column('int')
   sort: number;
+
+  @Column('enum', { enum: TypeQuestiontype, nullable: true })
+  type: TypeQuestiontype;
 
   @Column('enum', {
     enum: TypeQuestionStatus,

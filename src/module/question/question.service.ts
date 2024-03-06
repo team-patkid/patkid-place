@@ -14,6 +14,7 @@ export class QuestionService {
         id: question.id,
         content: question.content,
         sort: question.sort,
+        type: question.type,
         questionSub: question.questionSub.map((sub) => ({
           id: sub.id,
           questionId: sub.questionId,

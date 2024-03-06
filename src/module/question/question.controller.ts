@@ -26,6 +26,7 @@ export class QuestionController {
           id: dto.id,
           content: dto.content,
           sort: dto.sort,
+          type: dto.type,
           questionSub: dto.questionSub.map((sub) => ({
             id: sub.id,
             questionId: sub.questionId,
