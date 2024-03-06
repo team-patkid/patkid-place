@@ -2,7 +2,10 @@ import sinon, { SinonStubbedInstance } from 'sinon';
 import { QuestionEntity } from '../repository/entity/question.entity';
 import { QuestionSubEntity } from '../repository/entity/question.sub.entity';
 import { TypeQuestionStatus } from '../repository/enum/question.enum';
-import { TypeQuestionSubStatus } from '../repository/enum/question.sub.enum';
+import {
+  TypeQuestionSubStatus,
+  TypeQuestionSubType,
+} from '../repository/enum/question.sub.enum';
 import { QuestionRepositoryService } from '../repository/service/question.reposistory.service';
 import { QuestionService } from './question.service';
 
@@ -39,7 +42,7 @@ describe('QuestionService', () => {
   const createQuestionSubEntity = (ctx: {
     id?: number;
     questionId?: number;
-    type?: string;
+    type?: TypeQuestionSubType;
     content?: string;
     sort?: number;
     status?: TypeQuestionSubStatus;
@@ -49,7 +52,7 @@ describe('QuestionService', () => {
     const questionSub = new QuestionSubEntity();
     questionSub.id = ctx.id || 1;
     questionSub.questionId = ctx.questionId || 1;
-    questionSub.type = ctx.type || 'type';
+    questionSub.type = ctx.type || TypeQuestionSubType.J;
     questionSub.content = ctx.content || 'content';
     questionSub.sort = ctx.sort || 1;
     questionSub.status = ctx.status || TypeQuestionSubStatus.NORMAL;

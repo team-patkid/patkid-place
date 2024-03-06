@@ -7,6 +7,7 @@ import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import { DatabaseService } from './database/database.service';
 import { QuestionModule } from './question/question.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { QuestionModule } from './question/question.module';
       },
     }),
     QuestionModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [

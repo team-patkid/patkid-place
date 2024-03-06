@@ -30,8 +30,15 @@ export class GetQeustionServiceDto {
 
 export class GetQuestionSubDto {
   id: number;
+  @ApiProperty({ type: Number, description: '메인 질문 ID', example: 1 })
   questionId: number;
+  @ApiProperty({ type: String, description: 'MBTI 성향 타입', example: 'I' })
   type: TypeQuestionSubType;
+  @ApiProperty({
+    type: String,
+    description: '부가 질문',
+    example: ' 전시회 티켓을 사도록 친구를 설득한다',
+  })
   content: string;
 
   static from(entity: Partial<GetQuestionSubDto>) {
@@ -47,7 +54,13 @@ export class GetQuestionSubDto {
 
 export class GetQeustionDto {
   id: number;
+  @ApiProperty({
+    type: String,
+    description: 'content',
+    example: '이벤트에 당첨돼서 전시회 티켓 한 장이 생긴 나는',
+  })
   content: string;
+  @ApiProperty({ type: Number, description: '질문 순서', example: 1 })
   sort: number;
   @ApiProperty({ type: [GetQuestionSubDto] })
   questionSub: GetQuestionSubDto[];
