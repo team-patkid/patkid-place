@@ -6,6 +6,7 @@ import { ServiceExceptionFilter } from 'src/filter/service.exception.filter';
 import { DataSource } from 'typeorm';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import { DatabaseService } from './database/database.service';
+import { QuestionModule } from './question/question.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DatabaseService } from './database/database.service';
         return addTransactionalDataSource(new DataSource(options));
       },
     }),
+    QuestionModule,
   ],
   controllers: [AppController],
   providers: [

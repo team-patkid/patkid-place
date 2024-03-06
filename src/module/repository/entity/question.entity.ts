@@ -7,22 +7,19 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { TypeQuestionStatus, TypeQuestiontype } from '../enum/question.enum';
+import { TypeQuestionStatus } from '../enum/question.enum';
 import { QuestionSubEntity } from './question.sub.entity';
 
 @Entity('question')
 export class QuestionEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
-  id: string;
+  id: number;
 
   @Column('varchar', { length: 100 })
   content: string;
 
   @Column('int')
   sort: number;
-
-  @Column('enum', { enum: TypeQuestiontype })
-  type: TypeQuestiontype;
 
   @Column('enum', {
     enum: TypeQuestionStatus,
@@ -40,5 +37,5 @@ export class QuestionEntity extends BaseEntity {
   dateUpdate: Date;
 
   @OneToMany(() => QuestionSubEntity, (questionSub) => questionSub.question)
-  questionSub: QuestionSubEntity;
+  questionSub: QuestionSubEntity[];
 }

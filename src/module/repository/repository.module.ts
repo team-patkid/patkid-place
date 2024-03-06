@@ -6,6 +6,7 @@ import { QuestionEntity } from './entity/question.entity';
 import { QuestionSubEntity } from './entity/question.sub.entity';
 import { TagEntity } from './entity/tag.entity';
 import { UserEntity } from './entity/user.entity';
+import { QuestionRepositoryService } from './service/question.reposistory.service';
 import { UserRepositoryService } from './service/user.repository.service';
 
 @Module({
@@ -19,7 +20,7 @@ import { UserRepositoryService } from './service/user.repository.service';
       UserEntity,
     ]),
   ],
-  providers: [UserRepositoryService],
-  exports: [UserRepositoryService],
+  providers: [UserRepositoryService, QuestionRepositoryService],
+  exports: [UserRepositoryService, QuestionRepositoryService],
 })
 export class RepositoryModule {}

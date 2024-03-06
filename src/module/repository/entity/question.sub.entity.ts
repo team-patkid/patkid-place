@@ -8,7 +8,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { TypeQuestionSubStatus } from '../enum/question.sub.enum';
+import {
+  TypeQuestionSubStatus,
+  TypeQuestionSubType,
+} from '../enum/question.sub.enum';
 import { QuestionEntity } from './question.entity';
 
 @Entity('question_sub')
@@ -19,14 +22,14 @@ export class QuestionSubEntity extends BaseEntity {
   @Column('int')
   questionId: number;
 
-  @Column('varchar', { length: 10 })
-  type: string;
+  @Column('enum', { enum: TypeQuestionSubType })
+  type: TypeQuestionSubType;
 
-  @Column('varchar', { length: 100 })
+  @Column('varchar', { length: 100, nullable: false })
   content: string;
 
-  @Column('int')
-  sort: string;
+  @Column('int', { nullable: false })
+  sort: number;
 
   @Column('enum', {
     enum: TypeQuestionSubStatus,

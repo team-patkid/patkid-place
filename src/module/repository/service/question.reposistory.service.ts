@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { QuestionEntity } from '../entity/question.entity';
 
 @Injectable()
-export class QuesstionRepositoryService {
+export class QuestionRepositoryService {
   constructor(
     @InjectRepository(QuestionEntity)
     private readonly questionRepository: Repository<QuestionEntity>,
@@ -13,7 +13,7 @@ export class QuesstionRepositoryService {
   async findAll(): Promise<QuestionEntity[]> {
     return this.questionRepository.find({
       relations: ['questionSub'],
-      order: { id: 'ASC' },
+      order: { sort: 'ASC', questionSub: { sort: 'ASC' } },
     });
   }
 }
