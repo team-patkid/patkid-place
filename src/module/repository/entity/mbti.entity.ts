@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { TypeMbtiStatus } from '../enum/mbti.enum';
+import { TypeMbti, TypeMbtiStatus } from '../enum/mbti.enum';
 import { PlaceEntity } from './place.entity';
 
 @Entity('mbti')
@@ -15,8 +15,8 @@ export class MbtiEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column('varchar', { length: 10 })
-  mbti: string;
+  @Column('enum', { enum: TypeMbti, nullable: true })
+  mbti: TypeMbti;
 
   @Column('varchar', { length: 100 })
   name: string;
