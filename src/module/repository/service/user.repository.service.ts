@@ -46,4 +46,16 @@ export class UserRepositoryService {
 
     return result;
   }
+
+  async getPopularPlaceIdList(): Promise<number[]> {
+    const result = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user.placeId as "placeId"')
+      .groupBy('user.placeId')
+      .orderBy('COUNT(user.placeId)', 'DESC')
+      .limit(3)
+      .getRawMany();
+
+    return result.map((item) => item.placeId);
+  }
 }
