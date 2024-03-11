@@ -27,16 +27,6 @@ export class UserRepositoryService {
     return result;
   }
 
-  async getUserByShareUrl(shareUrl: string): Promise<UserEntity> {
-    const result = this.userRepository.findOneBy({
-      shareUrl,
-    });
-
-    if (!result) throw new ServiceError(ErrorCode.NOT_FOUND_CONTENT);
-
-    return result;
-  }
-
   async getUserTotalCount(): Promise<number> {
     const result = this.userRepository.count({
       where: {

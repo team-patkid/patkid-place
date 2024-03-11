@@ -27,9 +27,7 @@ export class UserService {
 
   async resultUser(mbit: TypeMbti): Promise<UserResultDto> {
     const mbti = await this.mbtiRepositoryService.getMbti(mbit);
-    console.log('MBTI ::: ', mbti);
     const placeList = await this.placeRepositoryService.findPlaceByMbti(mbit);
-    console.log('PLACE LIST ::: ', placeList);
     const randomValue = this.getRamdomValue(placeList.length);
 
     const place = placeList[randomValue];
@@ -60,7 +58,6 @@ export class UserService {
     return plainToClass(UserResultDto, {
       result,
       hotPlace,
-      isShare: user.shareUrl !== null,
     });
   }
 

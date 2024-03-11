@@ -11,7 +11,6 @@ export class GetTotalCountResponse {
 export class UserResultResponse {
   result: UserResultMbtiResponse;
   hotPlace: Array<UserResultPlaceResponse>;
-  isShare: boolean;
 }
 
 export class UserResultMbtiResponse {

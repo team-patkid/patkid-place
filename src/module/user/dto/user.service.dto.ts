@@ -8,7 +8,6 @@ import { TypeTagType } from 'src/module/repository/enum/type.enum';
 export class UserResultDto {
   result: UserResultMbtiDto;
   hotPlace: Array<UserResultPlaceDto>;
-  isShare: boolean;
 }
 
 export class UserResultMbtiDto {

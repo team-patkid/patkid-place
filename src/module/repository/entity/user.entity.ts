@@ -19,8 +19,8 @@ export class UserEntity extends BaseEntity {
   @Column('int', { name: 'place_id' })
   placeId: number;
 
-  @Column('varchar', { length: 4000, nullable: true })
-  shareUrl: string;
+  @Column('int', { default: 0, nullable: false })
+  shareCount: number;
 
   @Column('enum', {
     enum: TypeUserStatus,

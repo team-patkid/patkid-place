@@ -113,7 +113,7 @@ describe('UserService', () => {
   const createUserEntity = (ctx: {
     id?: string;
     placeId?: number;
-    shareUrl?: string;
+    shareUrl?: number;
     status?: TypeUserStatus;
     dateCreate?: Date;
     dateUpdate?: Date;
@@ -121,7 +121,7 @@ describe('UserService', () => {
     const entity = new UserEntity();
     entity.id = ctx.id ?? uuidV4();
     entity.placeId = ctx.placeId ?? 1;
-    entity.shareUrl = ctx.shareUrl;
+    entity.shareCount = ctx.shareUrl ?? 0;
     entity.status = ctx.status ?? TypeUserStatus.NORMAL;
     entity.dateCreate = ctx.dateCreate ?? new Date();
     entity.dateUpdate = ctx.dateUpdate ?? new Date();
@@ -156,7 +156,7 @@ describe('UserService', () => {
     const tagList = [1, 2, 3].map((i) => createTagEntity({ id: i, placeId }));
     const user = createUserEntity({
       placeId,
-      shareUrl: 'https://place.patkid.kr',
+      shareUrl: 1,
     });
     const popularPlaceList = [4, 5, 6].map((i) =>
       createPlaceEntity({ id: i, mbtiId: mbti }),
@@ -177,15 +177,11 @@ describe('UserService', () => {
       hotPlace: popularPlaceList.map((place) =>
         UserResultPlaceDto.from(place, tagList),
       ),
-      isShare: user.shareUrl !== null,
     });
-
-    console.log('expectedResult :::', expectedResult);
 
     // Act
     const result = await service.resultUser(mbti);
 
-    console.log('result :::', result);
     // Assert
     expect(result).toEqual(expectedResult);
   });

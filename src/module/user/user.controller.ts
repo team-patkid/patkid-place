@@ -80,7 +80,6 @@ export class UserController {
             type: tag.type,
           })),
         })),
-        isShare: result.isShare,
       }),
     );
   }
