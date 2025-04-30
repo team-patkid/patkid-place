@@ -37,4 +37,5 @@ lerna-debug.log*
 # Config
 /src/config/*
 !/src/config/type/
+!/src/config/enum/
 !/src/config/config.service.ts

@@ -4,7 +4,6 @@ import {
   ExpressAdapter,
   NestExpressApplication,
 } from '@nestjs/platform-express';
-import * as Sentry from '@sentry/node';
 import rTracer from 'cls-rtracer';
 import helmet from 'helmet';
 import moment from 'moment-timezone';
@@ -40,15 +39,6 @@ async function bootstrap() {
   app.use(rTracer.expressMiddleware());
   app.use(helmet({ contentSecurityPolicy: false }));
   app.enableShutdownHooks();
-
-  // 에러 모듈
-  Sentry.init({
-    dsn: ConfigService.getConfig().SENTRY_DSN,
-    enabled: true,
-    release: version,
-    environment: ConfigService.getConfig().ENV,
-    attachStacktrace: true,
-  });
 
   // request, response 로그 관리
   morganBody(app.getHttpAdapter().getInstance(), {

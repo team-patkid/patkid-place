@@ -19,9 +19,6 @@ export class DatabaseService implements TypeOrmOptionsFactory {
       synchronize: true,
       logging: true,
       parseInt8: true,
-      extra: {
-        connectionLimit: ConfigService.getConfig().DB_INFO.max,
-      },
     };
   }
 }

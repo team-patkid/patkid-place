@@ -1,23 +1,26 @@
-version: '3.9'
+version: '3.8'
 
 services:
-  backend:
+  patkid-api:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        - NODE_ENV=${NODE_ENV}
-    container_name: place_api
-    expose:
-      - '3001'
+        ENV: ${NODE_ENV}
+        PORT: 8001
+    environment:
+      - TZ=Asia/Seoul # 컨테이너 내부 시간대를 KST로 설정
+    image: patkid-api
+    ports:
+      - '8001:8001'
+    volumes:
+      - ./apps/api/logs:/app/apps/api/logs
+      - ./public:/app/public
     networks:
-      - patkid-bridge
-    logging:
-      driver: awslogs
-      options:
-        awslogs-group: '${NODE_ENV}-place-backend'
-        awslogs-region: 'ap-northeast-2'
-        awslogs-stream: 'backend'
+      - app
+    restart: always
+
 networks:
-  patkid-bridge:
+  app:
     external: true
+    name: app
