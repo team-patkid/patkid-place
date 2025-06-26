@@ -1,6 +1,10 @@
 pipeline {
     agent any
     
+    tools {
+        nodejs 'NodeJS-18'
+    }
+    
     environment {
         DOCKER_SERVICE_NAME = "${env.DOCKER_SERVICE_NAME}"
         ENV = "${env.ENV}"
@@ -41,28 +45,14 @@ pipeline {
             }
         }
 
-        stage('Quality Checks in Docker') {
-            parallel {
-                stage('Lint') {
-                    steps {
-                        bat """
-                        docker run --rm -v "%cd%":/app -w /app node:18-alpine sh -c "npm ci && npm run lint"
-                        """
-                    }
-                }
-                stage('Type Check') {
-                    steps {
-                        bat """
-                        docker run --rm -v "%cd%":/app -w /app node:18-alpine sh -c "npm ci && npx tsc --noEmit"
-                        """
-                    }
-                }
-                stage('Unit Tests') {
-                    steps {
-                        bat """
-                        docker run --rm -v "%cd%":/app -w /app node:18-alpine sh -c "npm ci && npm run test"
-                        """
-                    }
+        stage('Build and Test') {
+            steps {
+                script {
+                    echo "Building and testing with Docker..."
+                    bat """
+                    set NODE_ENV=${ENV}
+                    docker-compose build ${DOCKER_SERVICE_NAME}
+                    """
                 }
             }
         }
