@@ -1,24 +1,10 @@
 pipeline {
     agent any
-    
     environment {
         DOCKER_SERVICE_NAME = "${env.DOCKER_SERVICE_NAME}"
         ENV = "${env.ENV}"
-        APP_PORT = "8001"
     }
-    
     stages {
-        stage('Validate Environment') {
-            steps {
-                script {
-                    if (!env.DOCKER_SERVICE_NAME || !env.ENV) {
-                        error("Required environment variables not set: DOCKER_SERVICE_NAME, ENV")
-                    }
-                    echo "Environment validated - Service: ${env.DOCKER_SERVICE_NAME}, Env: ${env.ENV}"
-                }
-            }
-        }
-        
         stage('Get Git Info') {
             steps {
                 script {
@@ -34,82 +20,33 @@ pipeline {
 
                     env.GIT_COMMIT_MESSAGE = commitMessage
                     env.GIT_BRANCH = branchName
-                    
-                    echo "Branch: ${env.GIT_BRANCH}"
-                    echo "Commit: ${env.GIT_COMMIT_MESSAGE}"
                 }
             }
         }
 
-
-        stage('Build and Deploy') {
+        stage('Build and Run Docker Compose') {
             steps {
                 script {
                     bat """
+                    cd
                     set NODE_ENV=${ENV}
-                    docker-compose down ${DOCKER_SERVICE_NAME} || echo "Service not running"
                     docker-compose up -d --build ${DOCKER_SERVICE_NAME}
                     """
                 }
             }
         }
 
-        stage('Health Check') {
-            steps {
-                script {
-                    echo "Waiting for service to start..."
-                    timeout(time: 3, unit: 'MINUTES') {
-                        waitUntil {
-                            script {
-                                sleep(10)
-                                def response = bat(
-                                    script: "curl -f http://localhost:${APP_PORT}/health",
-                                    returnStatus: true
-                                )
-                                if (response == 0) {
-                                    echo "Health check passed"
-                                    return true
-                                } else {
-                                    echo "Health check failed, retrying..."
-                                    return false
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
         stage('Cleanup Docker Resources') {
             steps {
                 script {
-                    echo "Cleaning up unused Docker resources..."
+                    // 불필요한 Docker 리소스 정리
                     bat """
                     docker system prune -a -f
                     docker volume prune -f
                     """
                 }
             }
-        }
-    }
-    
-    post {
-        success {
-            echo "✅ Deployment successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
-            echo "Branch: ${env.GIT_BRANCH}"
-            echo "Commit: ${env.GIT_COMMIT_MESSAGE}"
-        }
-        failure {
-            echo "❌ Deployment failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
-            script {
-                bat """
-                echo "Rolling back service..."
-                docker-compose down ${DOCKER_SERVICE_NAME} || echo "Rollback cleanup failed"
-                """
-            }
-        }
-        always {
-            echo "Pipeline completed at ${new Date()}"
         }
     }
 }
