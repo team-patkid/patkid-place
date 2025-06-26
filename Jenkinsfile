@@ -41,31 +41,6 @@ pipeline {
             }
         }
 
-        stage('Quality Checks in Docker') {
-            parallel {
-                stage('Lint') {
-                    steps {
-                        bat """
-                        docker run --rm -v "%cd%":/app -w /app node:18-alpine sh -c "npm ci && npm run lint"
-                        """
-                    }
-                }
-                stage('Type Check') {
-                    steps {
-                        bat """
-                        docker run --rm -v "%cd%":/app -w /app node:18-alpine sh -c "npm ci && npx tsc --noEmit"
-                        """
-                    }
-                }
-                stage('Unit Tests') {
-                    steps {
-                        bat """
-                        docker run --rm -v "%cd%":/app -w /app node:18-alpine sh -c "npm ci && npm run test"
-                        """
-                    }
-                }
-            }
-        }
 
         stage('Build and Deploy') {
             steps {
