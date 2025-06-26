@@ -1,58 +1,153 @@
-node {
-    def nodejsHome = tool 'NodeJs 18.17.0'
-    env.PATH = "${nodejsHome}/bin:${env.PATH}"
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_SERVICE_NAME = "${env.DOCKER_SERVICE_NAME}"
+        ENV = "${env.ENV}"
+        APP_PORT = "8001"
+    }
+    
+    stages {
+        stage('Validate Environment') {
+            steps {
+                script {
+                    if (!env.DOCKER_SERVICE_NAME || !env.ENV) {
+                        error("Required environment variables not set: DOCKER_SERVICE_NAME, ENV")
+                    }
+                    echo "Environment validated - Service: ${env.DOCKER_SERVICE_NAME}, Env: ${env.ENV}"
+                }
+            }
+        }
+        
+        stage('Get Git Info') {
+            steps {
+                script {
+                    def commitMessage = bat(
+                        script: '@echo off && git log -1 --pretty=%%B',
+                        returnStdout: true
+                    ).trim()
 
-    try {
-      stage('ssh-test') {
-        sshagent (credentials: ['79ac0389-d078-4099-81e5-96bff12a2672']) {
-          sh "ssh -o StrictHostKeyChecking=no ${env.TARGET_HOST} 'uptime'"
+                    def branchName = bat(
+                        script: '@echo off && git rev-parse --abbrev-ref HEAD',
+                        returnStdout: true
+                    ).trim()
+
+                    env.GIT_COMMIT_MESSAGE = commitMessage
+                    env.GIT_BRANCH = branchName
+                    
+                    echo "Branch: ${env.GIT_BRANCH}"
+                    echo "Commit: ${env.GIT_COMMIT_MESSAGE}"
+                }
+            }
         }
-      }
-      stage('git pull origin dev') {
-        sshagent (credentials: ['79ac0389-d078-4099-81e5-96bff12a2672']) {
-          sh """
-            ssh -o StrictHostKeyChecking=no ${env.TARGET_HOST} '
-            cd projectP/patkid-place
-            git fetch origin
-            git checkout -b ${env.BRANCH_NAME} origin/${env.BRANCH_NAME}
-            git checkout ${env.BRANCH_NAME}
-            git pull origin ${env.BRANCH_NAME}
-          '
-          """
+
+        stage('Install Dependencies') {
+            steps {
+                bat 'npm ci'
+            }
         }
-      }
-      stage('docker-build') {
-        sshagent (credentials: ['79ac0389-d078-4099-81e5-96bff12a2672']) {
-          sh """
-            ssh -o StrictHostKeyChecking=no ${env.TARGET_HOST} '
-            cd projectP/patkid-place
-            sudo docker compose --env-file ./src/config/docker/.env.${env.BRANCH_NAME} build
-          '
-          """
+        
+        stage('Quality Checks') {
+            parallel {
+                stage('Lint') {
+                    steps {
+                        bat 'npm run lint'
+                    }
+                }
+                stage('Type Check') {
+                    steps {
+                        bat 'npx tsc --noEmit'
+                    }
+                }
+                stage('Unit Tests with Coverage') {
+                    steps {
+                        bat 'npm run test:cov'
+                    }
+                    post {
+                        always {
+                            publishTestResults testResultsPattern: 'coverage/junit.xml'
+                            publishHTML([
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: true,
+                                keepAll: true,
+                                reportDir: 'coverage/lcov-report',
+                                reportFiles: 'index.html',
+                                reportName: 'Coverage Report'
+                            ])
+                        }
+                    }
+                }
+            }
         }
-      }
-      stage('test-unit') {
-        sshagent (credentials: ['79ac0389-d078-4099-81e5-96bff12a2672']) {
-          sh """
-            ssh -o StrictHostKeyChecking=no ${env.TARGET_HOST} '
-            cd projectP/patkid-place
-            sudo docker compose -f docker-compose-test.yaml --env-file ./src/config/docker/.env.test run backend npm run test
-          '
-          """
+
+        stage('Build and Deploy') {
+            steps {
+                script {
+                    bat """
+                    set NODE_ENV=${ENV}
+                    docker-compose down ${DOCKER_SERVICE_NAME} || echo "Service not running"
+                    docker-compose up -d --build ${DOCKER_SERVICE_NAME}
+                    """
+                }
+            }
         }
-      }
-      stage('start nest') {
-        sshagent (credentials: ['79ac0389-d078-4099-81e5-96bff12a2672']) {
-          sh """
-            ssh -o StrictHostKeyChecking=no ${env.TARGET_HOST} '
-            cd projectP/patkid-place
-            sudo docker compose --env-file ./src/config/docker/.env.${env.BRANCH_NAME} up -d
-          '
-          """
+
+        stage('Health Check') {
+            steps {
+                script {
+                    echo "Waiting for service to start..."
+                    timeout(time: 3, unit: 'MINUTES') {
+                        waitUntil {
+                            script {
+                                sleep(10)
+                                def response = bat(
+                                    script: "curl -f http://localhost:${APP_PORT}/health",
+                                    returnStatus: true
+                                )
+                                if (response == 0) {
+                                    echo "Health check passed"
+                                    return true
+                                } else {
+                                    echo "Health check failed, retrying..."
+                                    return false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
-    } catch (env) {
-        echo 'error = ' + env
-        throw env
+
+        stage('Cleanup Docker Resources') {
+            steps {
+                script {
+                    echo "Cleaning up unused Docker resources..."
+                    bat """
+                    docker system prune -a -f
+                    docker volume prune -f
+                    """
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo "✅ Deployment successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+            echo "Branch: ${env.GIT_BRANCH}"
+            echo "Commit: ${env.GIT_COMMIT_MESSAGE}"
+        }
+        failure {
+            echo "❌ Deployment failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+            script {
+                bat """
+                echo "Rolling back service..."
+                docker-compose down ${DOCKER_SERVICE_NAME} || echo "Rollback cleanup failed"
+                """
+            }
+        }
+        always {
+            echo "Pipeline completed at ${new Date()}"
+        }
     }
 }
