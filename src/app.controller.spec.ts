@@ -12,10 +12,12 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
-  describe('getHello', () => {
-    it('should return "Hello patkid world!!"', () => {
-      const result = appController.getHello();
-      expect(result).toBe('Hello patkid world!!');
+  describe('getHealth', () => {
+    it('should return health status', () => {
+      const result = appController.getHealth();
+      expect(result.status).toBe('OK');
+      expect(result.timestamp).toBeDefined();
+      expect(result.version).toBeDefined();
     });
   });
 });

@@ -62,7 +62,7 @@ describe('UserService', () => {
 
   const createPlaceEntity = (ctx: {
     id?: number;
-    mbtiId?: TypeMbti;
+    mbtiId?: number;
     name?: string;
     naverUrl?: string;
     x?: number;
@@ -75,7 +75,7 @@ describe('UserService', () => {
   }): PlaceEntity => {
     const entity = new PlaceEntity();
     entity.id = ctx.id ?? 1;
-    entity.mbtiId = ctx.mbtiId ?? TypeMbti.INTJ;
+    entity.mbtiId = ctx.mbtiId ?? 1;
     entity.name = ctx.name ?? 'name';
     entity.naverUrl = ctx.naverUrl ?? 'naverUrl';
     entity.x = ctx.x ?? 1;
@@ -151,7 +151,7 @@ describe('UserService', () => {
     const mbtiEntity = createMbtiEntity({ mbti });
     const placeId = 2;
     const placeList = [1].map((i) =>
-      createPlaceEntity({ id: i, mbtiId: mbti }),
+      createPlaceEntity({ id: i, mbtiId: 1 }),
     );
     const tagList = [1, 2, 3].map((i) => createTagEntity({ id: i, placeId }));
     const user = createUserEntity({
@@ -159,7 +159,7 @@ describe('UserService', () => {
       shareUrl: 1,
     });
     const popularPlaceList = [4, 5, 6].map((i) =>
-      createPlaceEntity({ id: i, mbtiId: mbti }),
+      createPlaceEntity({ id: i, mbtiId: 1 }),
     );
 
     mbtiRepositoryService.getMbti.resolves(mbtiEntity);

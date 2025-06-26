@@ -44,5 +44,5 @@ export class UserEntity extends BaseEntity {
     createForeignKeyConstraints: process.env.NODE_ENV !== 'test',
   })
   @JoinColumn({ name: 'place_id' })
-  place: PlaceEntity[];
+  place: PlaceEntity;
 }

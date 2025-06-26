@@ -20,7 +20,7 @@ export class PlaceEntity extends BaseEntity {
   id: number;
 
   @Column('int')
-  mbtiId: string;
+  mbtiId: number;
 
   @Column('varchar', { length: 100, nullable: false })
   name: string;
@@ -62,11 +62,11 @@ export class PlaceEntity extends BaseEntity {
     createForeignKeyConstraints: process.env.NODE_ENV !== 'test',
   })
   @JoinColumn({ name: 'mbti_id' })
-  mbti: MbtiEntity[];
+  mbti: MbtiEntity;
 
   @OneToMany(() => UserEntity, (userEntity) => userEntity.place)
-  user: UserEntity;
+  user: UserEntity[];
 
   @OneToMany(() => TagEntity, (tagEntity) => tagEntity.place)
-  tag: TagEntity;
+  tag: TagEntity[];
 }
