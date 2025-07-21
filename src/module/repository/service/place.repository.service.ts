@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ErrorCode } from 'src/exception/enum/error.enum';
 import { ServiceError } from 'src/exception/service.error';
+import { ServiceErrorCode } from 'src/exception/enum/error.enum';
 import { In, Repository } from 'typeorm';
 import { MbtiEntity } from '../entity/mbti.entity';
 import { PlaceEntity } from '../entity/place.entity';
@@ -25,7 +25,7 @@ export class PlaceRepositoryService {
       .where('mbti.mbti = :mbti', { mbti })
       .getMany();
 
-    if (result.length < 1) throw new ServiceError(ErrorCode.NOT_FOUND_CONTENT);
+    if (result.length < 1) throw new ServiceError('해당 MBTI에 대한 장소를 찾을 수 없습니다.', ServiceErrorCode.NOT_FOUND_DATA);
 
     return result;
   }

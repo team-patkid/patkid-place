@@ -1,9 +1,8 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ResponseException } from 'src/decorator/response-error.decorator';
 import { ResponseListDto } from 'src/decorator/dto/response.list.dto';
-import { ResponseError } from 'src/decorator/response-error.decorator';
 import { ResponseList } from 'src/decorator/response-list.decorator';
-import { ErrorCode } from 'src/exception/enum/error.enum';
 import { GetQeustionDto } from './dto/question.dto';
 import { QuestionService } from './question.service';
 
@@ -12,11 +11,15 @@ export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 
   @ApiTags('질문')
-  @ApiOperation({ summary: 'Get list question' })
+  @ApiOperation({ 
+    summary: '질문 목록 조회', 
+    description: 'MBTI 성향 분석을 위한 질문 목록을 조회합니다.' 
+  })
+  @ResponseException(HttpStatus.NOT_FOUND, '질문 데이터를 찾을 수 없음')
+  @ResponseException(HttpStatus.INTERNAL_SERVER_ERROR, '서버 내부 오류')
   @Get('list')
   @HttpCode(HttpStatus.OK)
   @ResponseList(GetQeustionDto)
-  @ResponseError([ErrorCode.NOT_FOUND_CONTENT])
   async getList(): Promise<ResponseListDto<GetQeustionDto>> {
     const result = await this.questionService.getList();
 

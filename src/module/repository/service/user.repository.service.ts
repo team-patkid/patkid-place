@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ErrorCode } from 'src/exception/enum/error.enum';
 import { ServiceError } from 'src/exception/service.error';
+import { ServiceErrorCode } from 'src/exception/enum/error.enum';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../entity/user.entity';
 import { TypeUserStatus } from '../enum/user.enum';
@@ -22,7 +22,7 @@ export class UserRepositoryService {
       id: userId,
     });
 
-    if (!result) throw new ServiceError(ErrorCode.NOT_FOUND_CONTENT);
+    if (!result) throw new ServiceError('사용자를 찾을 수 없습니다.', ServiceErrorCode.NOT_FOUND_DATA);
 
     return result;
   }

@@ -2,6 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { PlaceEntity } from 'src/module/repository/entity/place.entity';
 import { TagEntity } from 'src/module/repository/entity/tag.entity';
 import { TypeTagType } from 'src/module/repository/enum/type.enum';
+import { UserResultDto } from './user.service.dto';
+import { plainToInstance } from 'class-transformer';
 
 export class GetTotalCountResponse {
   @ApiProperty({ type: Number, description: '참여자 수', example: 100 })
@@ -11,10 +13,10 @@ export class GetTotalCountResponse {
 export class UserResultTagResponse {
   @ApiProperty({ type: Number, description: '태그 ID', example: 1 })
   tagId: number;
-  
+
   @ApiProperty({ type: String, description: '태그명', example: '조용한' })
   tag: string;
-  
+
   @ApiProperty({ enum: TypeTagType, description: '태그 타입' })
   type: TypeTagType;
 }
@@ -22,25 +24,37 @@ export class UserResultTagResponse {
 export class UserResultPlaceResponse {
   @ApiProperty({ type: Number, description: '장소 ID', example: 1 })
   placeId: number;
-  
+
   @ApiProperty({ type: String, description: '장소명', example: '카페 이름' })
   name: string;
-  
-  @ApiProperty({ type: String, description: '네이버 URL', example: 'https://naver.com' })
+
+  @ApiProperty({
+    type: String,
+    description: '네이버 URL',
+    example: 'https://naver.com',
+  })
   naverUrl: string;
-  
-  @ApiProperty({ type: String, description: '장소 설명', example: '조용한 카페입니다' })
+
+  @ApiProperty({
+    type: String,
+    description: '장소 설명',
+    example: '조용한 카페입니다',
+  })
   content: string;
-  
-  @ApiProperty({ type: String, description: '이미지 URL', example: 'https://image.com' })
+
+  @ApiProperty({
+    type: String,
+    description: '이미지 URL',
+    example: 'https://image.com',
+  })
   imageUrl: string;
-  
+
   @ApiProperty({ type: Number, description: '경도', example: 127.123456 })
   x: number;
-  
+
   @ApiProperty({ type: Number, description: '위도', example: 37.123456 })
   y: number;
-  
+
   @ApiProperty({ type: [UserResultTagResponse], description: '태그 목록' })
   tags: Array<UserResultTagResponse>;
 
@@ -66,12 +80,16 @@ export class UserResultPlaceResponse {
 }
 
 export class UserResultMbtiResponse {
-  @ApiProperty({ type: String, description: '사용자 ID', example: 'uuid-string' })
+  @ApiProperty({
+    type: String,
+    description: '사용자 ID',
+    example: 'uuid-string',
+  })
   userId: string;
-  
+
   @ApiProperty({ type: String, description: 'MBTI 이름', example: 'INTJ' })
   name: string;
-  
+
   @ApiProperty({ type: UserResultPlaceResponse, description: '추천 장소' })
   place: UserResultPlaceResponse;
 }
@@ -79,7 +97,47 @@ export class UserResultMbtiResponse {
 export class UserResultResponse {
   @ApiProperty({ type: UserResultMbtiResponse, description: '테스트 결과' })
   result: UserResultMbtiResponse;
-  
-  @ApiProperty({ type: [UserResultPlaceResponse], description: '인기 장소 목록' })
+
+  @ApiProperty({
+    type: [UserResultPlaceResponse],
+    description: '인기 장소 목록',
+  })
   hotPlace: Array<UserResultPlaceResponse>;
+
+  static from(result: UserResultDto): UserResultResponse {
+    return plainToInstance(this, {
+      result: {
+        userId: result.result.userId,
+        name: result.result.name,
+        place: {
+          placeId: result.result.place.placeId,
+          name: result.result.place.name,
+          naverUrl: result.result.place.naverUrl,
+          content: result.result.place.content,
+          imageUrl: result.result.place.imageUrl,
+          x: result.result.place.x,
+          y: result.result.place.y,
+          tags: result.result.place.tags.map((tag) => ({
+            tagId: tag.tagId,
+            tag: tag.tag,
+            type: tag.type,
+          })),
+        },
+      },
+      hotPlace: result.hotPlace.map((place) => ({
+        placeId: place.placeId,
+        name: place.name,
+        naverUrl: place.naverUrl,
+        content: place.content,
+        imageUrl: place.imageUrl,
+        x: place.x,
+        y: place.y,
+        tags: place.tags.map((tag) => ({
+          tagId: tag.tagId,
+          tag: tag.tag,
+          type: tag.type,
+        })),
+      })),
+    });
+  }
 }
